@@ -23,7 +23,6 @@ public class Main{
 
 class MainFrame extends JFrame {
     private static final int WIDTH = 700;
-
     private static final int HEIGHT = 500;
 
     private JFileChooser fileChooser = null;
@@ -31,8 +30,6 @@ class MainFrame extends JFrame {
     private JMenuItem resetGraphicsMenuItem;
 
     private GraphicsDisplay display = new GraphicsDisplay();
-
-    private boolean fileLoaded = false;
 
     public MainFrame() {
         super("Мышь");
@@ -46,18 +43,18 @@ class MainFrame extends JFrame {
         menuBar.add(fileMenu);
         Action openGraphicsAction = new AbstractAction("Открыть файл с графиком") {
         public void actionPerformed(ActionEvent event) {
-            if (MainFrame.this.fileChooser == null) {
-                MainFrame.this.fileChooser = new JFileChooser();
-                MainFrame.this.fileChooser.setCurrentDirectory(new File("."));
+            if (fileChooser == null) {
+                fileChooser = new JFileChooser();
+                fileChooser.setCurrentDirectory(new File("."));
             }
-            MainFrame.this.fileChooser.showOpenDialog(MainFrame.this);
-            MainFrame.this.openGraphics(MainFrame.this.fileChooser.getSelectedFile());
+            fileChooser.showOpenDialog(MainFrame.this);
+            openGraphics(fileChooser.getSelectedFile());
             }
         };
         fileMenu.add(openGraphicsAction);
         Action resetGraphicsAction = new AbstractAction("Отменить все изменения") {
             public void actionPerformed(ActionEvent event) {
-                MainFrame.this.display.reset();
+                display.reset();
             }
         };
         setJMenuBar(menuBar);
