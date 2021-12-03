@@ -2,11 +2,7 @@ package MainPackege;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -23,7 +19,6 @@ public class Main{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
-
 }
 
 class MainFrame extends JFrame {
@@ -72,25 +67,43 @@ class MainFrame extends JFrame {
     }
 
     protected void openGraphics(File selectedFile) {
-    try {
-        DataInputStream in = new DataInputStream(new FileInputStream(selectedFile));
-        ArrayList<Double[]> graphicsData = (ArrayList) new ArrayList<Double>(50);
-        while (in.available() > 0) {
-            Double x = Double.valueOf(in.readDouble());
-            Double y = Double.valueOf(in.readDouble());
-            graphicsData.add(new Double[]{x, y});
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(selectedFile.getAbsolutePath()));
+            ArrayList<Double[]> graphicsData = new ArrayList<>();
+            String line;
+            String[] strings = null;
+
+            while ((line = reader.readLine()) != null) {
+                strings = line.split(" ");
+            }
+
+            Double x = 0d;
+            Double y = 0d;
+            for (int i = 0; i < strings.length; i++) {
+                if (i % 2 == 0) {
+                    x = Double.parseDouble(strings[i]);
+                }
+                if (i % 2 != 0) {
+                    y = Double.parseDouble(strings[i]);
+                    graphicsData.add(new Double[]{x, y});
+                }
+            }
+
+            display.displayGraphics(graphicsData);
+
+            reader.close();
+        } catch (FileNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "Указанный файл не найден",
+                    "Ошибка загрузки данных", JOptionPane.WARNING_MESSAGE);
+            return;
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Ошибка чтения координат точек из файла",
+                    "Ошибка загрузки данных", JOptionPane.WARNING_MESSAGE);
+            return;
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, "Ошибка чтения координат точек из файла",
+                    "Ошибка загрузки данных", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-        if (graphicsData.size() > 0) {
-            this.fileLoaded = true;
-            this.resetGraphicsMenuItem.setEnabled(true);
-            this.display.displayGraphics(graphicsData);
-        }
-    } catch (FileNotFoundException ex) {
-        JOptionPane.showMessageDialog(this, "Файл не найден","Ошибка загрузки данных",2);
-        return;
-    } catch (IOException ex) {
-        JOptionPane.showMessageDialog(this,"Файл не найден","Ошибка загрузки данных", 2);
-        return;
     }
-}
 }
